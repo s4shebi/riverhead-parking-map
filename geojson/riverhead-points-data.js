@@ -448,7 +448,7 @@ var riverheadPointsData = {
         "contact": "631-228-8039",
         "link": "https://www.mta.info/stations/riverhead",
         "linkText": "Info",
-        "streetView": null
+        "streetView": "https://www.google.com/maps/place/40%C2%B055'10.9%22N+72%C2%B040'03.1%22W/@40.9195559,-72.6675021,3a,60y,174.64h,81.65t/data=!3m7!1e1!3m5!1sSrTYLeU9qewQrtbXHYsP7Q!2e0!6shttps:%2F%2Fstreetviewpixels-pa.googleapis.com%2Fv1%2Fthumbnail%3Fcb_client%3Dmaps_sv.tactile%26w%3D900%26h%3D600%26pitch%3D8.352048907039816%26panoid%3DSrTYLeU9qewQrtbXHYsP7Q%26yaw%3D174.63842165578464!7i16384!8i8192!4m4!3m3!8m2!3d40.91968!4d-72.6675268?entry=ttu&g_ep=EgoyMDI1MTExMi4wIKXMDSoASAFQAw%3D%3D"
       }
     }
   ]
