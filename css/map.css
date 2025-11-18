@@ -1,0 +1,167 @@
+body, html {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    font-family: Arial, sans-serif;
+}
+
+#map {
+    height: calc(100vh - 56px); /* Adjust for mobile navbar height */
+    width: 100%;
+}
+
+@media (min-width: 768px) {
+    #map {
+        height: 100vh;
+    }
+}
+
+.leaflet-control-layers-toggle {
+    filter: drop-shadow(0px 0px 5px rgba(0, 0, 0, 0.5)); /* Better visibility of the control */
+}
+
+/* Legend styles */
+.legend {
+    background: white;
+    padding: 10px;
+    line-height: 18px;
+    color: #555;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    z-index: 999;
+}
+
+.legend h4 {
+    margin: 0 0 5px;
+    font-size: 16px;
+}
+
+.legend input {
+    margin-right: 5px;
+}
+
+.legend i {
+    width: 18px;
+    height: 18px;
+    margin-right: 8px;
+    opacity: 0.7;
+}
+
+.container-fluid {
+    padding: 0;
+}
+
+/* Top left corner text for Parking Navigator */
+.title {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    z-index: 1000;
+    background-color: rgba(255, 255, 255, 0.8);
+    padding: 5px 10px;
+    font-size: 18px;
+    font-weight: bold;
+    color: #333;
+    border-radius: 10px;
+}
+
+/* Brand name at the top */
+.brand {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    z-index: 1000;
+    background-color: rgba(255, 255, 255, 0.8);
+    padding: 5px 10px;
+    font-size: 14px;
+    font-weight: bold;
+    color: #333;
+}
+
+/* Bottom note for Powered By */
+.powered-by {
+    position: absolute;
+    bottom: 10px;
+    left: 10px;
+    z-index: 1000;
+    background-color: rgba(255, 255, 255, 0.8);
+    padding: 5px 10px;
+    font-size: 12px;
+    color: #333;
+}
+
+#toggleLegendBtn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 5px 6px; /* Larger tap target */
+    font-size: 13px; /* Larger label */
+    font-weight: bold;
+    min-width: 7px; /* Recommended touch target */
+    min-height: 7px; /* Recommended touch target */
+    border-radius: 6px; /* Softer corners */
+}
+
+.bigger-icon {
+    font-size: 1.5em;
+}
+
+/* Optional: Style for the button when active */
+#toggleLegendBtn.active {
+    background-color: #f8f9fa; /* Change this color as needed */
+    color: black;              /* Text color when active */
+}
+
+/* Optional: Style for the button when not active */
+#toggleLegendBtn:not(.active) {
+    background-color: #f8f9fa; /* Change this color as needed */
+    color: black;              /* Text color when inactive */
+}
+
+/* Ensure the icon inside the top-right legend toggle is big even after JS swaps */
+#toggleLegendBtn i {
+    font-size: 1.1em;
+    line-height: 1;
+}
+
+/* Responsive adjustments for mobile */
+@media (max-width: 768px) {
+    .title, .brand, .powered-by {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        margin: 0;
+        padding: 10px;
+        text-align: center;
+    }
+
+    .brand {
+        margin-bottom: 10px;
+    }
+
+    .powered-by {
+        bottom: auto;
+        margin-top: 10px;
+    }
+}
+
+.legend-toggle-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0; /* Remove padding */
+    background-color: transparent; /* Transparent background for the button */
+    border: none; /* No border */
+    cursor: pointer; /* Pointer cursor on hover */
+    transition: background-color 0.3s; /* Smooth transition for background color */
+    margin: 0 auto; /* Center button horizontally */
+    margin-top: 10px;
+}
+
+.icon-container i {
+    color: #bd0000; /* Icon color */
+    font-size: 20px; /* Icon size */
+    line-height: 1; /* Set line-height to 1 for vertical centering */
+}

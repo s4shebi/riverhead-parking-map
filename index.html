@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <title>RIVERHEAD PARKING NAVIGATOR</title>
+
+    <!-- Leaflet CSS -->
+    <link rel="stylesheet" href="css/leaflet.css" />
+
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+
+    <!-- Custom CSS -->
+    <link rel='stylesheet' href='libs/Sidebar/L.Control.Sidebar.css'>
+    <link rel='stylesheet' href='css/map.css' id="customCSS">
+
+    <style>
+        /* Additional styles for the new legend */
+        .map-legend {
+            z-index: 1000;
+        }
+
+        .custom-checkbox {
+            position: relative;
+            display: inline-block;
+            width: 15px;
+            height: 15px;
+            margin-right: 7px;
+            background-color: #fff;
+            border: 1px solid #ccc;
+            border-radius: 3px;
+            cursor: pointer;
+        }
+
+        .custom-checkbox.checked {
+            border: 1px solid #000;
+            background-color: #eee;
+        }
+
+        .custom-checkbox.checked::after {
+            content: "";
+            position: absolute;
+            top: 2px;
+            left: 2px;
+            width: 8px;
+            height: 8px;
+            background-color: currentColor;
+            border-radius: 2px;
+        }
+
+        .category-spacing {
+            margin-top: 20px;
+            margin-bottom: 3px;
+            border-top: 1px solid #ddd;
+            padding-top: 10px;
+        }
+
+        .legend-toggle-btn {
+            position: absolute;
+            bottom: 10px;
+            right: 10px;
+            background: white;
+            border: 1px solid #ccc;
+            border-radius: 3px;
+            padding: 5px;
+            cursor: pointer;
+            z-index: 1001;
+        }
+
+        .btn-sm {
+            padding: 2px 5px;
+            font-size: 10px;
+        }
+
+        .bigger-icon {
+            font-size: 1.2em;
+        }
+
+        .legend-toggle-btn i {
+            display: block;
+        }
+
+    </style>
+</head>
+<body>
+
+<!-- Map container -->
+<div id="map"></div>
+
+<!-- Old legend container (keep for compatibility if needed) -->
+<div id="legend-container" style="position: absolute; top: 70px; right: 10px;">
+    <div id="legend" class="legend" style="display: none; background: white; padding: 10px; border-radius: 5px; box-shadow: 0 2px 10px rgba(0,0,0,0.5);">
+        <h4>RIVERHEAD PARKING NAVIGATOR</h4>
+        <div id="overlayList"></div>
+    </div>
+</div>
+
+<!-- Modal structure to display bikeMarker details -->
+<div id="bikeModal" class="modal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Bike Rental Information</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p><b>Bicycle Rental Services</b></p>
+                <p>Contact local bike rental shops in Riverhead for availability and pricing.</p>
+                <p><strong>Text for help:</strong> 631-228-8039</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Structure -->
+<div class="modal fade" id="streetViewModal" tabindex="-1" aria-labelledby="streetViewModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="streetViewModalLabel">Street View</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <iframe id="streetViewIframe" src="" width="100%" height="500px" frameborder="0" allowfullscreen></iframe>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Toggle Legend Button -->
+<button id="toggleLegendBtn" role="button" class="btn btn-primary btn-sm" style="position: absolute; top: 10px; right: 10px; z-index: 1000; margin-bottom: 50px">
+    <i class="fa-solid fa-toggle-on bigger-icon"></i> <strong>Legend</strong>
+</button>
+
+<!-- JavaScript -->
+<script src="js/leaflet.js"></script>
+<script src="js/leaflet-providers.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+<script src="libs/L.multiControl.js"></script>
+<script src="libs/L.Control.Button.js"></script>
+<script src="libs/Sidebar/L.Control.Sidebar.js"></script>
+
+<!-- Load GeoJSON data -->
+<script src="geojson/riverhead-points-data.js"></script>
+
+<!-- Main map script -->
+<script src='js/map.js' id="mapJS"></script>
+
+<!-- JavaScript to add cache busting -->
+<script>
+    const version = new Date().getTime();
+
+    // Cache busting for CSS files
+    document.querySelectorAll('link[rel="stylesheet"]').forEach(link => {
+        if (link.href) {
+            link.href += `?v=${version}`;
+        }
+    });
+
+    // Cache busting for JavaScript files
+    document.querySelectorAll('script[src]').forEach(script => {
+        const src = script.src;
+        if (src) {
+            script.src = `${src}?v=${version}`;
+        }
+    });
+</script>
+
+</body>
+</html>

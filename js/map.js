@@ -1,0 +1,517 @@
+// Initialize the map and set its view
+var map = L.map('map', {
+    minZoom: 1,
+    maxZoom: 19,
+}).setView([40.9185, -72.6620], 15);
+
+// Define the different basemaps
+const topoBasemap = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+});
+
+var satelliteBasemap = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
+    attribution: 'Tiles courtesy of the <a href="https://usgs.gov/">U.S. Geological Survey</a>', maxZoom: 19
+});
+
+// Add Satellite basemap by default
+satelliteBasemap.addTo(map);
+
+// Layer control for switching between basemaps
+var baseMaps = {
+    "Satellite": satelliteBasemap,
+    "Topographic": topoBasemap
+};
+
+// Define custom icons
+const parkingIcon = L.icon({
+    iconUrl: 'icons/parking.svg',
+    iconSize: [35, 32],
+    iconAnchor: [12, 30],
+    popupAnchor: [0, -30]
+});
+
+const boatParkingIcon = L.icon({
+    iconUrl: 'icons/boat-parking.svg',
+    iconSize: [35, 32],
+    iconAnchor: [12, 30],
+    popupAnchor: [0, -30]
+});
+
+const transportationIcon = L.icon({
+    iconUrl: 'icons/transportation.svg',
+    iconSize: [35, 32],
+    iconAnchor: [12, 30],
+    popupAnchor: [0, -30]
+});
+
+const EVIcon = L.icon({
+    iconUrl: 'icons/EV.png',
+    iconSize: [25, 32],
+    iconAnchor: [12, 30],
+    popupAnchor: [0, -30]
+});
+
+// const gasIcon = L.icon({
+//     iconUrl: 'icons/gas.png',
+//     iconSize: [25, 32],
+//     iconAnchor: [12, 30],
+//     popupAnchor: [0, -30]
+// });
+
+const sharedIcon = L.icon({
+    iconUrl: 'icons/shared-parking.svg',
+    iconSize: [35, 32],
+    iconAnchor: [12, 30],
+    popupAnchor: [0, -30]
+});
+
+const mainStreetIcon = L.icon({
+    iconUrl: 'icons/main-street-parking.svg',
+    iconSize: [35, 32],
+    iconAnchor: [12, 30],
+    popupAnchor: [0, -30]
+});
+
+// Define marker groups
+var markers = {
+    parking: L.layerGroup(),
+    shared: L.layerGroup(),
+    'main-street': L.layerGroup(),
+    boat: L.layerGroup(),
+    // gas: L.layerGroup(),
+    ev: L.layerGroup(),
+    transportation: L.layerGroup()
+};
+
+// Define icon mapping
+const iconMapping = {
+    'parking': parkingIcon,
+    'shared': sharedIcon,
+    'main-street': mainStreetIcon,
+    'boat': boatParkingIcon,
+    // 'gas': transportationIcon,
+    'ev': EVIcon,
+    'transportation': transportationIcon
+};
+
+// Define category mapping for popup styling
+const categoryMapping = {
+    'parking': 'Parking',
+    'shared': 'Shared Parking',
+    'main-street': 'Main Street Parking',
+    'boat': 'Boat Parking',
+    // 'gas': 'Gas Station',
+    'ev': 'EV Station',
+    'transportation': 'LIRR' // CHANGED FROM 'Transportation' TO 'LIRR'
+};
+
+function safeField(value) {
+    return value !== null && value !== undefined && value !== "" && value !== "null";
+}
+
+// Function to generate styled popups
+function generatePopupContent(title, description, spaces, accessibleSpaces, managedBy, season, days, hours, policy, cost, contact, link, linkText, lat, lng, category, streetView) {
+    const categoryStyles = {
+        'Parking': { iconColor: '#196ced' },
+        'Shared Parking': { iconColor: '#f3c200' },
+        'Main Street Parking': { iconColor: '#bd0000' },
+        'Boat Parking': { iconColor: '#F1C232' },
+        // 'Gas Station': { iconColor: '#CC0000' },
+        'EV Station': { iconColor: '#6AA84F' },
+        'LIRR': { iconColor: '#8e44ad' } // CHANGED FROM 'Transportation' TO 'LIRR'
+    };
+
+    const styles = categoryStyles[category] || { iconColor: '#000000' };
+
+    return `
+    <div class="card" style="width: 20rem; border: none;">
+        <div class="card-body" style="background-color: #f0f4f8; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1);">
+            <h5 class="card-title" style="font-size: 1.2rem; font-weight: bold; color: ${styles.iconColor}; text-transform: uppercase;">${title}</h5>
+            <p class="card-text" style="font-size: 1rem; color: #212529;">
+                ${safeField(cost) ? `
+    <i class="fas fa-money-bill-wave" style="color: ${styles.iconColor};"></i> 
+    Cost: <strong style="color: ${styles.iconColor};">${cost}</strong><br>` : ''}
+            ${safeField(spaces) ? `
+                <i class="fas fa-parking" style="color: ${styles.iconColor};"></i> 
+                Total Spaces: <strong style="color: ${styles.iconColor};">${spaces}</strong><br>` : ''}
+            
+            ${safeField(accessibleSpaces) ? `
+                <i class="fas fa-wheelchair" style="color: ${styles.iconColor};"></i> 
+                Accessible Spaces: <strong style="color: ${styles.iconColor};">${accessibleSpaces}</strong><br>` : ''}
+            
+            ${safeField(managedBy) ? `
+                <i class="fas fa-building" style="color: ${styles.iconColor};"></i> 
+                Managed By: <strong style="color: ${styles.iconColor};">${managedBy}</strong><br>` : ''}
+            
+            ${safeField(season) ? `
+                <i class="fas fa-calendar" style="color: ${styles.iconColor};"></i> 
+                Season: <strong style="color: ${styles.iconColor};">${season}</strong><br>` : ''}
+            
+            ${safeField(days) ? `
+                <i class="fas fa-calendar-day" style="color: ${styles.iconColor};"></i> 
+                Days: <strong style="color: ${styles.iconColor};">${days}</strong><br>` : ''}
+            
+            ${safeField(hours) ? `
+                <i class="fas fa-clock" style="color: ${styles.iconColor};"></i> 
+                Hours: <strong style="color: ${styles.iconColor};">${hours}</strong><br>` : ''}
+            
+            ${safeField(policy) ? `
+                <i class="fas fa-info-circle" style="color: ${styles.iconColor};"></i> 
+                Policy: <strong style="color: ${styles.iconColor};">${policy}</strong><br>` : ''}
+            
+            ${safeField(contact) ? `
+                <i class="fas fa-phone-alt" style="color: ${styles.iconColor};"></i> 
+                Text for help: <a href="sms:${contact}" style="color: ${styles.iconColor};">${contact}</a><br>` : ''}
+            
+            ${safeField(link) ? `
+                <a href="${link}" target="_blank" style="color: ${styles.iconColor}; text-decoration: underline;">
+                    ${linkText || 'Website'}
+                </a><br>` : ''}
+            
+            ${safeField(streetView) ? `
+                <a href="${streetView}" target="_blank" style="color: ${styles.iconColor}; text-decoration: underline;">
+                    Street View
+                </a>` : ''}
+
+            </p>
+            <div class="text-center">
+                <button type="button" class="btn btn-warning btn-sm zoom-to-marker" data-lat="${lat}" data-lng="${lng}" style="background-color: ${styles.iconColor}; border: none; padding: 8px 10px; font-size: 12px; border-radius: 8px; min-height: 34px;">Zoom To Here</button>
+            </div>
+        </div>
+    </div>`;
+}
+
+// Load and process GeoJSON data
+function loadPointsData() {
+    L.geoJSON(riverheadPointsData, {
+        pointToLayer: function(feature, latlng) {
+            const category = feature.properties.category;
+            const icon = iconMapping[category];
+
+            return L.marker(latlng, { icon: icon });
+        },
+        onEachFeature: function(feature, layer) {
+            const props = feature.properties;
+            const coords = feature.geometry.coordinates;
+
+            layer.bindPopup(generatePopupContent(
+                props.title,
+                props.description,
+                props.spaces,
+                props.accessibleSpaces,
+                props.managedBy,
+                props.season,
+                props.days,
+                props.hours,
+                props.policy,
+                props.cost,
+                props.contact,
+                props.link,
+                props.linkText,
+                coords[1], // lat
+                coords[0], // lng
+                categoryMapping[props.category],
+                props.streetView
+            ));
+
+            // Add to appropriate layer group
+            const markerGroup = markers[props.category];
+            if (markerGroup) {
+                markerGroup.addLayer(layer);
+            }
+        }
+    });
+
+    // Add all marker groups to the map initially
+    for (var key in markers) {
+        if (markers[key].getLayers().length > 0) {
+            markers[key].addTo(map);
+        }
+    }
+
+    // Fit bounds to include all markers
+    var bounds = L.latLngBounds();
+    riverheadPointsData.features.forEach(feature => {
+        const coords = feature.geometry.coordinates;
+        bounds.extend([coords[1], coords[0]]);
+    });
+
+    // Add some padding to the bounds
+    if (bounds.isValid()) {
+        map.fitBounds(bounds.pad(0.1));
+    }
+}
+
+// Add event listener to all marker popups
+document.addEventListener('click', function(event) {
+    if (event.target.classList.contains('zoom-to-marker')) {
+        const lat = parseFloat(event.target.getAttribute('data-lat'));
+        const lng = parseFloat(event.target.getAttribute('data-lng'));
+        map.setView([lat, lng], 20);
+    }
+});
+
+// // Function to open the modal for the bike marker
+// function showBikeModal() {
+//     var bikeModal = new bootstrap.Modal(document.getElementById('bikeModal'), {});
+//     bikeModal.show();
+// }
+
+// Load the points data
+loadPointsData();
+
+// Create the legend control
+var legend = L.control({ position: 'topright' });
+
+legend.onAdd = function (map) {
+    var div = L.DomUtil.create('div', 'legend rounded p-2 border border-secondary');
+    div.style.backgroundColor = "#fff";
+    div.style.width = "250px";
+    div.style.fontSize = "0.9em";
+    div.style.padding = "10px";
+    div.style.borderRadius = "10px";
+    div.style.marginTop = "50px";
+    div.className += ' map-legend';
+
+    div.innerHTML += '<style>' +
+        '.custom-checkbox {' +
+        'position: relative;' +
+        'display: inline-block;' +
+        'width: 15px;' +
+        'height: 15px;' +
+        'margin-right: 7px;' +
+        'background-color: #fff;' +
+        'border: 1px solid #ccc;' +
+        'border-radius: 3px;' +
+        'cursor: pointer;' +
+        '}' +
+        '.custom-checkbox.checked {' +
+        'border: 1px solid #000;' +
+        'background-color: #eee;' +
+        '}' +
+        '.custom-checkbox.checked::after {' +
+        'content: "";' +
+        'position: absolute;' +
+        'top: 2px;' +
+        'left: 2px;' +
+        'width: 8px;' +
+        'height: 8px;' +
+        'background-color: currentColor;' +
+        'border-radius: 2px;' +
+        '}' +
+        '.category-spacing {' +
+        'margin-top: 20px;' +
+        'margin-bottom: 3px;' +
+        'border-top: 1px solid #ddd;' +
+        'padding-top: 10px;' +
+        '}' +
+        '</style>';
+
+    div.innerHTML += `
+        <div style="display: flex; align-items: center; justify-content: space-between; padding-bottom: 10px; border-bottom: 1px solid #ddd;">
+            <img src="icons/logo.png" alt="Logo" style="width: 40px; height: 40px; margin-left: 5px;"/>
+            <div style="text-align: center; flex-grow: 1;">
+                <h7 style="margin: 0; color: black; font-size: 1.1em; text-align: center;"><strong>PARKING NAVIGATOR</strong></h7>
+                <h4 style="margin: 0; color: black; font-size: 1.1em; text-align: center;"><strong>Downtown Riverhead</strong></h4>
+            </div>
+        </div>
+    `;
+
+    div.innerHTML += `
+    <div style="text-transform: uppercase; color: black; display: flex; justify-content: space-between; align-items: center; margin-top: 10px">
+            <strong>Show/Hide</strong>
+            <i class="fa-solid fa-eye" id="toggle-all-layers" style="cursor: pointer; font-size: 1em; color: green;"></i>
+    </div>`;
+
+    div.innerHTML += '<hr style="margin: 5px 0;">';
+
+    // Add Parking section
+    div.innerHTML += '<div style="margin-top: 10px; margin-bottom: 5px; text-transform: uppercase; color: black;"><strong>Parking</strong></div>';
+    div.innerHTML += `
+    <div style="display: flex; align-items: center; margin-bottom: 5px;">
+        <span class="custom-checkbox checked" id="toggle-parking" style="color: #196ced; margin-right: 5px;"></span>
+        <label style="margin: 0; color: black;">Free Lot Parking</label>
+    </div>
+    `;
+    div.innerHTML += `
+    <div style="display: flex; align-items: center; margin-bottom: 5px;">
+        <span class="custom-checkbox checked" id="toggle-shared" style="color: #f3c200; margin-right: 5px;"></span>
+        <label style="margin: 0; color: black;">Shared Parking</label>
+    </div>
+    `;
+    div.innerHTML += `
+    <div style="display: flex; align-items: center; margin-bottom: 5px;">
+        <span class="custom-checkbox checked" id="toggle-main-street" style="color: #bd0000; margin-right: 5px;"></span>
+        <label style="margin: 0; color: black;">Main Street Parking</label>
+    </div>
+    `;
+
+    // Add Transportation/Mobility section
+    div.innerHTML += '<div class="category-spacing" style="text-transform: uppercase; color: black; margin-top: 10px;"><strong>Transportation/Mobility</strong></div>';
+    div.innerHTML += `
+    <div style="display: flex; align-items: center; margin-bottom: 5px;">
+        <span class="custom-checkbox checked" id="toggle-lirr" style="color: #8e44ad; margin-right: 5px;"></span>
+        <label style="margin: 0; color: black;">LIRR</label>
+    </div>
+    `;
+
+    // Add EV/Gas section
+    div.innerHTML += '<div class="category-spacing" style="text-transform: uppercase; color: black; margin-top: 10px;"><strong>EV/Gas</strong></div>';
+    div.innerHTML += `
+    <div style="display: flex; align-items: center; margin-bottom: 5px;">
+        <span class="custom-checkbox checked" id="toggle-ev" style="color: #6AA84F; margin-right: 5px;"></span>
+        <label style="margin: 0; color: black;">EV Station</label>
+    </div>
+    `;
+
+    div.innerHTML += '<div class="category-spacing" style="text-transform: uppercase;color: black"><strong>Map modes</strong><br></div>';
+    div.innerHTML += `
+    <div style="display: flex; align-items: center; gap: 2px; font-size: 10px;">
+        <input type="radio" class="btn-check" name="basemap" id="satellite-basemap" autocomplete="off" onclick="switchBasemap('Satellite')" checked>
+        <label class="btn btn-outline-success btn-sm" for="satellite-basemap" style="padding: 2px 5px; font-size: 10px;">Satellite</label>
+        
+        <input type="radio" class="btn-check" name="basemap" id="topographic-basemap" autocomplete="off" onclick="switchBasemap('Topographic')">
+        <label class="btn btn-outline-success btn-sm" for="topographic-basemap" style="padding: 2px 5px; font-size: 10px;">Topographic</label>
+    </div><br>`;
+
+    div.innerHTML += '<hr style="margin: 5px 0;">';
+
+    var poweredBy = document.createElement('div');
+    poweredBy.style.marginTop = '5px';
+    poweredBy.innerHTML = `
+    <p style="margin: 0;font-weight: bold;font-size: 0.8em;">Powered by:</p>
+    <img src="icons/pmc.png" alt="Powered by" style="max-width: 100%; height: auto; margin-top: 3px"/>`;
+    div.appendChild(poweredBy);
+
+    // // Fix the bottom button positioning
+    // div.innerHTML += `
+    // <div style="position: relative; margin-top: 20px; margin-bottom: 0; text-align: center;">
+    //     <div class="legend-toggle-btn" id="toggleLegendBottomBtn" style="display: inline-block; position: relative; margin: 0 auto; border: none;">
+    //         <div class="icon-container">
+    //             <i class="fa-solid fa-arrow-up"></i>
+    //         </div>
+    //     </div>
+    // </div>`;
+
+    // Toggle visibility function
+    const toggleVisibility = (id, layer) => {
+        const checkbox = div.querySelector(`#${id}`);
+        checkbox.addEventListener('click', function() {
+            // Remove the bike modal condition
+            if (this.classList.toggle('checked')) {
+                markers[layer].addTo(map);
+            } else {
+                map.removeLayer(markers[layer]);
+            }
+        });
+    };
+
+    toggleVisibility('toggle-parking', 'parking');
+    toggleVisibility('toggle-shared', 'shared');
+    toggleVisibility('toggle-main-street', 'main-street');
+    toggleVisibility('toggle-lirr', 'transportation'); // map data category is 'transportation' (LIRR)
+    toggleVisibility('toggle-ev', 'ev');
+
+    // Toggle all layers
+    var allLayersVisible = true;
+    div.querySelector('#toggle-all-layers').addEventListener('click', function() {
+        allLayersVisible = !allLayersVisible;
+
+        const idToLayer = {
+            'toggle-parking': 'parking',
+            'toggle-shared': 'shared',
+            'toggle-main-street': 'main-street',
+            'toggle-ev': 'ev',
+            'toggle-lirr': 'transportation', // map data category is 'transportation' (LIRR)
+            'toggle-transportation': 'transportation'
+        };
+
+        ['toggle-parking', 'toggle-shared', 'toggle-main-street', 'toggle-ev', 'toggle-lirr', 'toggle-transportation'].forEach(function(id) {
+            const checkbox = div.querySelector(`#${id}`);
+            const layer = idToLayer[id];
+
+            if (!checkbox || !layer) return;
+
+            if (allLayersVisible) {
+                checkbox.classList.add('checked');
+                if (layer !== 'bike' && !map.hasLayer(markers[layer])) {
+                    markers[layer].addTo(map);
+                }
+            } else {
+                checkbox.classList.remove('checked');
+                if (layer !== 'bike' && map.hasLayer(markers[layer])) {
+                    map.removeLayer(markers[layer]);
+                }
+            }
+        });
+
+        const icon = this;
+        if (allLayersVisible) {
+            icon.classList.remove('fa-eye-slash');
+            icon.classList.add('fa-eye');
+            icon.style.color = 'green';
+        } else {
+            icon.classList.remove('fa-eye');
+            icon.classList.add('fa-eye-slash');
+            icon.style.color = 'red';
+        }
+    });
+
+    return div;
+};
+
+// Add the legend to the map
+legend.addTo(map);
+
+// Function to switch basemaps
+function switchBasemap(basemap) {
+    if (basemap === 'Satellite') {
+        map.removeLayer(topoBasemap);
+        satelliteBasemap.addTo(map);
+    } else if (basemap === 'Topographic') {
+        map.removeLayer(satelliteBasemap);
+        topoBasemap.addTo(map);
+    }
+}
+
+// Legend visibility control
+var legendVisible = true;
+
+// Set initial icon for the button
+document.getElementById('toggleLegendBtn').innerHTML = '<i class="fa-solid fa-toggle-on" style="color: green; "></i> <strong>Legend</strong>';
+
+var toggleLegendBtn = document.getElementById('toggleLegendBtn');
+
+function addLegendToMap() {
+    legend.addTo(map);
+    legendVisible = true;
+    toggleLegendBtn.innerHTML = '<i class="fa-solid fa-toggle-on" style="color: green;"></i> <strong>Legend</strong>';
+}
+
+function removeLegendFromMap() {
+    map.removeControl(legend);
+    legendVisible = false;
+    toggleLegendBtn.innerHTML = '<i class="fa-solid fa-toggle-off" style="color: black;"></i> Legend';
+}
+
+toggleLegendBtn.addEventListener('click', function () {
+    if (legendVisible) {
+        removeLegendFromMap();
+    } else {
+        addLegendToMap();
+    }
+});
+
+// Handle bottom toggle button
+function handleBottomButtonClick() {
+    removeLegendFromMap();
+    var toggleBottomButton = document.getElementById("toggleLegendBottomBtn");
+    if (toggleBottomButton) {
+        toggleBottomButton.disabled = true;
+    }
+}
+
+var toggleBottomButton = document.getElementById("toggleLegendBottomBtn");
+if (toggleBottomButton) {
+    toggleBottomButton.addEventListener("click", handleBottomButtonClick);
+}

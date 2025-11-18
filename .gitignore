@@ -1,0 +1,23 @@
+# OS Files
+.DS_Store
+Thumbs.db
+
+# Node (if ever installed in project later)
+node_modules/
+npm-debug.log
+
+# Build artifacts
+dist/
+build/
+
+# Local environment
+.env
+*.log
+
+# JetBrains / VSCode IDE files
+.idea/
+.vscode/
+
+# Temporary files
+*.tmp
+*.temp
