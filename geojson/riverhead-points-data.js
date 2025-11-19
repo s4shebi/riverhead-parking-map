@@ -173,7 +173,7 @@ var riverheadPointsData = {
         "contact": "631-228-8039",
         "link": null,
         "linkText": null,
-        "streetView": "https://www.google.com/maps/place/40%C2%B055'08.3%22N+72%C2%B039'26.4%22W/@40.9187753,-72.6577982,3a,75y,62.1h,90t/data=!3m7!1e1!3m5!1sU_F9XCBbV_hrWCa4R709pQ!2e0!6shttps:%2F%2Fstreetviewpixels-pa.googleapis.com%2Fv1%2Fthumbnail%3Fcb_client%3Dmaps_sv.tactile%26w%3D900%26h%3D600%26pitch%3D0%26panoid%3DU_F9XCBbV_hrWCa4R709pQ%26yaw%3D62.10255!7i16384!8i8192!4m4!3m3!8m2!3d40.9189592!4d-72.6573372?entry=ttu&g_ep=EgoyMDI1MTExMi4wIKXMDSoASAFQAw%3D%3D"
+        "streetView": "https://www.google.com/maps/place/40%C2%B055'08.6%22N+72%C2%B039'26.6%22W/@40.9187753,-72.6577982,3a,60y,20.16h,95.67t/data=!3m7!1e1!3m5!1sU_F9XCBbV_hrWCa4R709pQ!2e0!6shttps:%2F%2Fstreetviewpixels-pa.googleapis.com%2Fv1%2Fthumbnail%3Fcb_client%3Dmaps_sv.tactile%26w%3D900%26h%3D600%26pitch%3D-5.673932048767966%26panoid%3DU_F9XCBbV_hrWCa4R709pQ%26yaw%3D20.163767625476606!7i16384!8i8192!4m4!3m3!8m2!3d40.9190472!4d-72.6573825?entry=ttu&g_ep=EgoyMDI1MTExNi4wIKXMDSoASAFQAw%3D%3D"
       }
     },
     {
@@ -423,7 +423,7 @@ var riverheadPointsData = {
         "contact": "631-228-8039",
         "link": "https://www.electrifyamerica.com/locate-charger/ny/riverhead/209-east-ave/700069/",
         "linkText": "Website",
-        "streetView": "https://www.electrifyamerica.com/locate-charger/ny/riverhead/209-east-ave/700069/"
+        "streetView": "https://www.google.com/maps/place/Electrify+America+Charging+Station/@40.9188003,-72.6604186,3a,75y,338.02h,90t/data=!3m7!1e1!3m5!1sggoSIW9MQeUsw-AgC0qqNA!2e0!6shttps:%2F%2Fstreetviewpixels-pa.googleapis.com%2Fv1%2Fthumbnail%3Fcb_client%3Dmaps_sv.tactile%26w%3D900%26h%3D600%26pitch%3D0%26panoid%3DggoSIW9MQeUsw-AgC0qqNA%26yaw%3D338.02258!7i16384!8i8192!4m15!1m8!3m7!1s0x89e85ed0f0668cff:0x159d8aa2bb09cabc!2sRiverhead,+NY!3b1!8m2!3d40.9170435!4d-72.6620402!16zL20vMDJyNTcw!3m5!1s0x89e88b298e45137b:0xdac2bf9c26199f39!8m2!3d40.9188776!4d-72.6604471!16s%2Fg%2F11s5tzt496?entry=ttu&g_ep=EgoyMDI1MTExNi4wIKXMDSoASAFQAw%3D%3D"
       }
     },
     {
