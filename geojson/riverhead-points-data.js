@@ -173,7 +173,7 @@ var riverheadPointsData = {
         "contact": "631-228-8039",
         "link": null,
         "linkText": null,
-        "streetView": "https://www.google.com/maps/place/40%C2%B055'08.6%22N+72%C2%B039'26.6%22W/@40.9187753,-72.6577982,3a,60y,20.16h,95.67t/data=!3m7!1e1!3m5!1sU_F9XCBbV_hrWCa4R709pQ!2e0!6shttps:%2F%2Fstreetviewpixels-pa.googleapis.com%2Fv1%2Fthumbnail%3Fcb_client%3Dmaps_sv.tactile%26w%3D900%26h%3D600%26pitch%3D-5.673932048767966%26panoid%3DU_F9XCBbV_hrWCa4R709pQ%26yaw%3D20.163767625476606!7i16384!8i8192!4m4!3m3!8m2!3d40.9190472!4d-72.6573825?entry=ttu&g_ep=EgoyMDI1MTExNi4wIKXMDSoASAFQAw%3D%3D"
+        "streetView": "https://www.google.com/maps/@40.9185343,-72.6570421,3a,75y,358.8h,85.37t/data=!3m7!1e1!3m5!1sEheWUE1cWvUgOEYDg8l5QQ!2e0!6shttps:%2F%2Fstreetviewpixels-pa.googleapis.com%2Fv1%2Fthumbnail%3Fcb_client%3Dmaps_sv.tactile%26w%3D900%26h%3D600%26pitch%3D4.629067648852143%26panoid%3DEheWUE1cWvUgOEYDg8l5QQ%26yaw%3D358.7997156790983!7i16384!8i8192?entry=ttu&g_ep=EgoyMDI1MTExNi4wIKXMDSoASAFQAw%3D%3D"
       }
     },
     {
