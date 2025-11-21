@@ -51,13 +51,6 @@ const EVIcon = L.icon({
     popupAnchor: [0, -30]
 });
 
-// const gasIcon = L.icon({
-//     iconUrl: 'icons/gas.png',
-//     iconSize: [25, 32],
-//     iconAnchor: [12, 30],
-//     popupAnchor: [0, -30]
-// });
-
 const sharedIcon = L.icon({
     iconUrl: 'icons/shared-parking.svg',
     iconSize: [35, 32],
@@ -78,7 +71,6 @@ var markers = {
     shared: L.layerGroup(),
     'main-street': L.layerGroup(),
     boat: L.layerGroup(),
-    // gas: L.layerGroup(),
     ev: L.layerGroup(),
     transportation: L.layerGroup()
 };
@@ -89,7 +81,6 @@ const iconMapping = {
     'shared': sharedIcon,
     'main-street': mainStreetIcon,
     'boat': boatParkingIcon,
-    // 'gas': transportationIcon,
     'ev': EVIcon,
     'transportation': transportationIcon
 };
@@ -100,9 +91,8 @@ const categoryMapping = {
     'shared': 'Shared Parking',
     'main-street': 'Main Street Parking',
     'boat': 'Boat Parking',
-    // 'gas': 'Gas Station',
     'ev': 'EV Station',
-    'transportation': 'LIRR' // CHANGED FROM 'Transportation' TO 'LIRR'
+    'transportation': 'LIRR'
 };
 
 function safeField(value) {
@@ -116,9 +106,8 @@ function generatePopupContent(title, description, spaces, accessibleSpaces, mana
         'Shared Parking': { iconColor: '#f3c200' },
         'Main Street Parking': { iconColor: '#bd0000' },
         'Boat Parking': { iconColor: '#F1C232' },
-        // 'Gas Station': { iconColor: '#CC0000' },
         'EV Station': { iconColor: '#6AA84F' },
-        'LIRR': { iconColor: '#8e44ad' } // CHANGED FROM 'Transportation' TO 'LIRR'
+        'LIRR': { iconColor: '#8e44ad' }
     };
 
     const styles = categoryStyles[category] || { iconColor: '#000000' };
@@ -181,43 +170,107 @@ function generatePopupContent(title, description, spaces, accessibleSpaces, mana
     </div>`;
 }
 
-// Load and process GeoJSON data
-function loadPointsData() {
-    L.geoJSON(riverheadPointsData, {
-        pointToLayer: function(feature, latlng) {
-            const category = feature.properties.category;
+// Function to load data from Google Sheets
+function loadPointsDataFromGoogleSheets() {
+    // Replace with your Google Sheets published CSV URL
+    const sheetUrl = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRASpU-odS7cJNT2_CsQAWbM9dMKbEKC9dAgGrJ6Ea3aQ3yEsX-EUx8xYZaQ4QvtYfV5RgJSmf8hguP/pub?gid=0&single=true&output=csv';
+
+    // For now, using a placeholder - you'll need to replace with actual Google Sheets integration
+    // This is a simplified approach - you might want to use the Google Sheets API for better reliability
+
+    fetch(sheetUrl)
+        .then(response => response.text())
+        .then(csvText => {
+            const data = parseCSV(csvText);
+            processMapData(data);
+        })
+        .catch(error => {
+            console.error('Error loading data from Google Sheets:', error);
+            // Fallback to hardcoded data or show error message
+            alert('Error loading parking data. Please try again later.');
+        });
+}
+
+// Function to parse CSV data
+function parseCSV(csvText) {
+    const lines = csvText.split('\n');
+    const headers = lines[0].split(',').map(header => header.trim().replace(/"/g, ''));
+
+    const data = [];
+
+    for (let i = 1; i < lines.length; i++) {
+        const line = lines[i].trim();
+        if (!line) continue;
+
+        const values = [];
+        let inQuotes = false;
+        let currentValue = '';
+
+        for (let char of line) {
+            if (char === '"') {
+                inQuotes = !inQuotes;
+            } else if (char === ',' && !inQuotes) {
+                values.push(currentValue.trim().replace(/"/g, ''));
+                currentValue = '';
+            } else {
+                currentValue += char;
+            }
+        }
+        values.push(currentValue.trim().replace(/"/g, ''));
+
+        const row = {};
+        headers.forEach((header, index) => {
+            row[header] = values[index] || '';
+        });
+
+        data.push(row);
+    }
+
+    return data;
+}
+
+// Function to process map data and create markers
+function processMapData(data) {
+    const bounds = L.latLngBounds();
+
+    data.forEach(row => {
+        const lat = parseFloat(row.latitude);
+        const lng = parseFloat(row.longitude);
+        const category = row.category;
+
+        if (!isNaN(lat) && !isNaN(lng)) {
             const icon = iconMapping[category];
 
-            return L.marker(latlng, { icon: icon });
-        },
-        onEachFeature: function(feature, layer) {
-            const props = feature.properties;
-            const coords = feature.geometry.coordinates;
+            if (icon) {
+                const marker = L.marker([lat, lng], { icon: icon });
 
-            layer.bindPopup(generatePopupContent(
-                props.title,
-                props.description,
-                props.spaces,
-                props.accessibleSpaces,
-                props.managedBy,
-                props.season,
-                props.days,
-                props.hours,
-                props.policy,
-                props.cost,
-                props.contact,
-                props.link,
-                props.linkText,
-                coords[1], // lat
-                coords[0], // lng
-                categoryMapping[props.category],
-                props.streetView
-            ));
+                marker.bindPopup(generatePopupContent(
+                    row.title,
+                    row.description,
+                    row.spaces,
+                    row.accessibleSpaces,
+                    row.managedBy,
+                    row.season,
+                    row.days,
+                    row.hours,
+                    row.policy,
+                    row.cost,
+                    row.contact,
+                    row.link,
+                    row.linkText,
+                    lat,
+                    lng,
+                    categoryMapping[category],
+                    row.streetView
+                ));
 
-            // Add to appropriate layer group
-            const markerGroup = markers[props.category];
-            if (markerGroup) {
-                markerGroup.addLayer(layer);
+                // Add to appropriate layer group
+                const markerGroup = markers[category];
+                if (markerGroup) {
+                    markerGroup.addLayer(marker);
+                }
+
+                bounds.extend([lat, lng]);
             }
         }
     });
@@ -229,14 +282,7 @@ function loadPointsData() {
         }
     }
 
-    // Fit bounds to include all markers
-    var bounds = L.latLngBounds();
-    riverheadPointsData.features.forEach(feature => {
-        const coords = feature.geometry.coordinates;
-        bounds.extend([coords[1], coords[0]]);
-    });
-
-    // Add some padding to the bounds
+    // Fit bounds to include all markers with padding
     if (bounds.isValid()) {
         map.fitBounds(bounds.pad(0.1));
     }
@@ -251,14 +297,8 @@ document.addEventListener('click', function(event) {
     }
 });
 
-// // Function to open the modal for the bike marker
-// function showBikeModal() {
-//     var bikeModal = new bootstrap.Modal(document.getElementById('bikeModal'), {});
-//     bikeModal.show();
-// }
-
-// Load the points data
-loadPointsData();
+// Load the points data from Google Sheets
+loadPointsDataFromGoogleSheets();
 
 // Create the legend control
 var legend = L.control({ position: 'topright' });
@@ -383,21 +423,10 @@ legend.onAdd = function (map) {
     <img src="icons/pmc.png" alt="Powered by" style="max-width: 100%; height: auto; margin-top: 3px"/>`;
     div.appendChild(poweredBy);
 
-    // // Fix the bottom button positioning
-    // div.innerHTML += `
-    // <div style="position: relative; margin-top: 20px; margin-bottom: 0; text-align: center;">
-    //     <div class="legend-toggle-btn" id="toggleLegendBottomBtn" style="display: inline-block; position: relative; margin: 0 auto; border: none;">
-    //         <div class="icon-container">
-    //             <i class="fa-solid fa-arrow-up"></i>
-    //         </div>
-    //     </div>
-    // </div>`;
-
     // Toggle visibility function
     const toggleVisibility = (id, layer) => {
         const checkbox = div.querySelector(`#${id}`);
         checkbox.addEventListener('click', function() {
-            // Remove the bike modal condition
             if (this.classList.toggle('checked')) {
                 markers[layer].addTo(map);
             } else {
@@ -409,7 +438,7 @@ legend.onAdd = function (map) {
     toggleVisibility('toggle-parking', 'parking');
     toggleVisibility('toggle-shared', 'shared');
     toggleVisibility('toggle-main-street', 'main-street');
-    toggleVisibility('toggle-lirr', 'transportation'); // map data category is 'transportation' (LIRR)
+    toggleVisibility('toggle-lirr', 'transportation');
     toggleVisibility('toggle-ev', 'ev');
 
     // Toggle all layers
@@ -422,11 +451,10 @@ legend.onAdd = function (map) {
             'toggle-shared': 'shared',
             'toggle-main-street': 'main-street',
             'toggle-ev': 'ev',
-            'toggle-lirr': 'transportation', // map data category is 'transportation' (LIRR)
-            'toggle-transportation': 'transportation'
+            'toggle-lirr': 'transportation'
         };
 
-        ['toggle-parking', 'toggle-shared', 'toggle-main-street', 'toggle-ev', 'toggle-lirr', 'toggle-transportation'].forEach(function(id) {
+        ['toggle-parking', 'toggle-shared', 'toggle-main-street', 'toggle-ev', 'toggle-lirr'].forEach(function(id) {
             const checkbox = div.querySelector(`#${id}`);
             const layer = idToLayer[id];
 
@@ -434,12 +462,12 @@ legend.onAdd = function (map) {
 
             if (allLayersVisible) {
                 checkbox.classList.add('checked');
-                if (layer !== 'bike' && !map.hasLayer(markers[layer])) {
+                if (!map.hasLayer(markers[layer])) {
                     markers[layer].addTo(map);
                 }
             } else {
                 checkbox.classList.remove('checked');
-                if (layer !== 'bike' && map.hasLayer(markers[layer])) {
+                if (map.hasLayer(markers[layer])) {
                     map.removeLayer(markers[layer]);
                 }
             }
@@ -501,17 +529,3 @@ toggleLegendBtn.addEventListener('click', function () {
         addLegendToMap();
     }
 });
-
-// Handle bottom toggle button
-function handleBottomButtonClick() {
-    removeLegendFromMap();
-    var toggleBottomButton = document.getElementById("toggleLegendBottomBtn");
-    if (toggleBottomButton) {
-        toggleBottomButton.disabled = true;
-    }
-}
-
-var toggleBottomButton = document.getElementById("toggleLegendBottomBtn");
-if (toggleBottomButton) {
-    toggleBottomButton.addEventListener("click", handleBottomButtonClick);
-}
