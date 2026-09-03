@@ -65,11 +65,19 @@ const mainStreetIcon = L.icon({
     popupAnchor: [0, -30]
 });
 
+const underConstructionParkingIcon = L.icon({
+    iconUrl: 'icons/under-construction-parking.svg',
+    iconSize: [35, 32],
+    iconAnchor: [12, 30],
+    popupAnchor: [0, -30]
+});
+
 // Define marker groups
 var markers = {
     parking: L.layerGroup(),
     shared: L.layerGroup(),
     'main-street': L.layerGroup(),
+    'under-construction': L.layerGroup(),
     boat: L.layerGroup(),
     ev: L.layerGroup(),
     transportation: L.layerGroup()
@@ -80,6 +88,7 @@ const iconMapping = {
     'parking': parkingIcon,
     'shared': sharedIcon,
     'main-street': mainStreetIcon,
+    'under-construction': underConstructionParkingIcon,
     'boat': boatParkingIcon,
     'ev': EVIcon,
     'transportation': transportationIcon
@@ -90,6 +99,7 @@ const categoryMapping = {
     'parking': 'Parking',
     'shared': 'Shared Parking',
     'main-street': 'Main Street Parking',
+    'under-construction': 'Under Construction - Limited Parking',
     'boat': 'Boat Parking',
     'ev': 'EV Station',
     'transportation': 'LIRR'
@@ -105,6 +115,7 @@ function generatePopupContent(title, description, spaces, accessibleSpaces, mana
         'Parking': { iconColor: '#196ced' },
         'Shared Parking': { iconColor: '#f3c200' },
         'Main Street Parking': { iconColor: '#bd0000' },
+        'Under Construction - Limited Parking': { iconColor: '#e66100' },
         'Boat Parking': { iconColor: '#F1C232' },
         'EV Station': { iconColor: '#6AA84F' },
         'LIRR': { iconColor: '#8e44ad' }
@@ -385,6 +396,12 @@ legend.onAdd = function (map) {
         <label style="margin: 0; color: black;">Main Street Parking</label>
     </div>
     `;
+    div.innerHTML += `
+    <div style="display: flex; align-items: center; margin-bottom: 5px;">
+        <span class="custom-checkbox checked" id="toggle-under-construction" style="color: #e66100; margin-right: 5px;"></span>
+        <label style="margin: 0; color: black;">Under Construction - Limited Parking</label>
+    </div>
+    `;
 
     // Add Transportation/Mobility section
     div.innerHTML += '<div class="category-spacing" style="text-transform: uppercase; color: black; margin-top: 10px;"><strong>Transportation/Mobility</strong></div>';
@@ -438,6 +455,7 @@ legend.onAdd = function (map) {
     toggleVisibility('toggle-parking', 'parking');
     toggleVisibility('toggle-shared', 'shared');
     toggleVisibility('toggle-main-street', 'main-street');
+    toggleVisibility('toggle-under-construction', 'under-construction');
     toggleVisibility('toggle-lirr', 'transportation');
     toggleVisibility('toggle-ev', 'ev');
 
@@ -450,11 +468,12 @@ legend.onAdd = function (map) {
             'toggle-parking': 'parking',
             'toggle-shared': 'shared',
             'toggle-main-street': 'main-street',
+            'toggle-under-construction': 'under-construction',
             'toggle-ev': 'ev',
             'toggle-lirr': 'transportation'
         };
 
-        ['toggle-parking', 'toggle-shared', 'toggle-main-street', 'toggle-ev', 'toggle-lirr'].forEach(function(id) {
+        ['toggle-parking', 'toggle-shared', 'toggle-main-street', 'toggle-under-construction', 'toggle-ev', 'toggle-lirr'].forEach(function(id) {
             const checkbox = div.querySelector(`#${id}`);
             const layer = idToLayer[id];
 
