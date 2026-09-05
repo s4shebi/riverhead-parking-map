@@ -127,6 +127,28 @@ body, html {
 
 /* Responsive adjustments for mobile */
 @media (max-width: 768px) {
+    .leaflet-top.leaflet-right {
+        top: 8px;
+        right: 8px;
+        max-width: calc(100vw - 16px);
+    }
+
+    .map-legend {
+        width: min(340px, calc(100vw - 16px)) !important;
+        max-height: calc(100dvh - 24px) !important;
+        margin-top: 0 !important;
+        overflow-y: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    #toggleLegendBtn {
+        top: 8px !important;
+        right: 8px !important;
+        z-index: 1001 !important;
+        min-width: 44px;
+        min-height: 36px;
+    }
+
     .title, .brand, .powered-by {
         position: fixed;
         top: 0;

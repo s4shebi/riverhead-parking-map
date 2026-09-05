@@ -318,11 +318,16 @@ legend.onAdd = function (map) {
     var div = L.DomUtil.create('div', 'legend rounded p-2 border border-secondary');
     div.style.backgroundColor = "#fff";
     div.style.width = "250px";
+    div.style.maxWidth = "calc(100vw - 20px)";
+    div.style.maxHeight = "calc(100vh - 80px)";
+    div.style.overflowY = "auto";
     div.style.fontSize = "0.9em";
     div.style.padding = "10px";
     div.style.borderRadius = "10px";
     div.style.marginTop = "50px";
     div.className += ' map-legend';
+    L.DomEvent.disableClickPropagation(div);
+    L.DomEvent.disableScrollPropagation(div);
 
     div.innerHTML += '<style>' +
         '.custom-checkbox {' +
@@ -365,6 +370,7 @@ legend.onAdd = function (map) {
                 <h7 style="margin: 0; color: black; font-size: 1.1em; text-align: center;"><strong>PARKING NAVIGATOR</strong></h7>
                 <h4 style="margin: 0; color: black; font-size: 1.1em; text-align: center;"><strong>Downtown Riverhead</strong></h4>
             </div>
+            <button type="button" id="close-legend" aria-label="Hide legend" title="Hide legend" style="background: transparent; border: none; color: #333; cursor: pointer; font-size: 1.3em; line-height: 1; padding: 4px 0 4px 8px;">&times;</button>
         </div>
     `;
 
@@ -451,6 +457,8 @@ legend.onAdd = function (map) {
             }
         });
     };
+
+    div.querySelector('#close-legend').addEventListener('click', removeLegendFromMap);
 
     toggleVisibility('toggle-parking', 'parking');
     toggleVisibility('toggle-shared', 'shared');
