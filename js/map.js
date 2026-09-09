@@ -317,7 +317,7 @@ var legend = L.control({ position: 'topright' });
 legend.onAdd = function (map) {
     var div = L.DomUtil.create('div', 'legend rounded p-2 border border-secondary');
     div.style.backgroundColor = "#fff";
-    div.style.width = "250px";
+    div.style.width = "230px";
     div.style.maxWidth = "calc(100vw - 20px)";
     div.style.maxHeight = "calc(100vh - 80px)";
     div.style.overflowY = "auto";
@@ -328,6 +328,7 @@ legend.onAdd = function (map) {
     div.className += ' map-legend';
     L.DomEvent.disableClickPropagation(div);
     L.DomEvent.disableScrollPropagation(div);
+    L.DomEvent.on(div, 'mousedown touchstart pointerdown click dblclick contextmenu wheel', L.DomEvent.stopPropagation);
 
     div.innerHTML += '<style>' +
         '.custom-checkbox {' +
@@ -364,7 +365,7 @@ legend.onAdd = function (map) {
         '</style>';
 
     div.innerHTML += `
-        <div style="display: flex; align-items: center; justify-content: space-between; padding-bottom: 10px; border-bottom: 1px solid #ddd;">
+        <div class="legend-header" style="display: flex; align-items: center; justify-content: space-between; padding-bottom: 10px; border-bottom: 1px solid #ddd;">
             <img src="icons/logo.png" alt="Logo" style="width: 40px; height: 40px; margin-left: 5px;"/>
             <div style="text-align: center; flex-grow: 1;">
                 <h7 style="margin: 0; color: black; font-size: 1.1em; text-align: center;"><strong>PARKING NAVIGATOR</strong></h7>
@@ -375,61 +376,61 @@ legend.onAdd = function (map) {
     `;
 
     div.innerHTML += `
-    <div style="text-transform: uppercase; color: black; display: flex; justify-content: space-between; align-items: center; margin-top: 10px">
+    <div class="legend-show-hide" style="text-transform: uppercase; color: black; display: flex; justify-content: space-between; align-items: center; margin-top: 10px">
             <strong>Show/Hide</strong>
             <i class="fa-solid fa-eye" id="toggle-all-layers" style="cursor: pointer; font-size: 1em; color: green;"></i>
     </div>`;
 
-    div.innerHTML += '<hr style="margin: 5px 0;">';
+    div.innerHTML += '<hr class="legend-separator" style="margin: 5px 0;">';
 
     // Add Parking section
-    div.innerHTML += '<div style="margin-top: 10px; margin-bottom: 5px; text-transform: uppercase; color: black;"><strong>Parking</strong></div>';
+    div.innerHTML += '<div class="legend-section-title" style="margin-top: 10px; margin-bottom: 5px; text-transform: uppercase; color: black;"><strong>Parking</strong></div>';
     div.innerHTML += `
-    <div style="display: flex; align-items: center; margin-bottom: 5px;">
+    <div class="legend-row" style="display: flex; align-items: center; margin-bottom: 5px;">
         <span class="custom-checkbox checked" id="toggle-parking" style="color: #196ced; margin-right: 5px;"></span>
         <label style="margin: 0; color: black;">Free Lot Parking</label>
     </div>
     `;
     div.innerHTML += `
-    <div style="display: flex; align-items: center; margin-bottom: 5px;">
+    <div class="legend-row" style="display: flex; align-items: center; margin-bottom: 5px;">
         <span class="custom-checkbox checked" id="toggle-shared" style="color: #f3c200; margin-right: 5px;"></span>
         <label style="margin: 0; color: black;">Shared Parking</label>
     </div>
     `;
     div.innerHTML += `
-    <div style="display: flex; align-items: center; margin-bottom: 5px;">
+    <div class="legend-row" style="display: flex; align-items: center; margin-bottom: 5px;">
         <span class="custom-checkbox checked" id="toggle-main-street" style="color: #bd0000; margin-right: 5px;"></span>
         <label style="margin: 0; color: black;">Main Street Parking</label>
     </div>
     `;
     div.innerHTML += `
-    <div style="display: flex; align-items: center; margin-bottom: 5px;">
+    <div class="legend-row" style="display: flex; align-items: center; margin-bottom: 5px;">
         <span class="custom-checkbox checked" id="toggle-under-construction" style="color: #e66100; margin-right: 5px;"></span>
         <label style="margin: 0; color: black;">Under Construction - Limited Parking</label>
     </div>
     `;
 
     // Add Transportation/Mobility section
-    div.innerHTML += '<div class="category-spacing" style="text-transform: uppercase; color: black; margin-top: 10px;"><strong>Transportation/Mobility</strong></div>';
+    div.innerHTML += '<div class="category-spacing legend-section-title" style="text-transform: uppercase; color: black; margin-top: 10px;"><strong>Transportation/Mobility</strong></div>';
     div.innerHTML += `
-    <div style="display: flex; align-items: center; margin-bottom: 5px;">
+    <div class="legend-row" style="display: flex; align-items: center; margin-bottom: 5px;">
         <span class="custom-checkbox checked" id="toggle-lirr" style="color: #8e44ad; margin-right: 5px;"></span>
         <label style="margin: 0; color: black;">LIRR</label>
     </div>
     `;
 
     // Add EV/Gas section
-    div.innerHTML += '<div class="category-spacing" style="text-transform: uppercase; color: black; margin-top: 10px;"><strong>EV/Gas</strong></div>';
+    div.innerHTML += '<div class="category-spacing legend-section-title" style="text-transform: uppercase; color: black; margin-top: 10px;"><strong>EV/Gas</strong></div>';
     div.innerHTML += `
-    <div style="display: flex; align-items: center; margin-bottom: 5px;">
+    <div class="legend-row" style="display: flex; align-items: center; margin-bottom: 5px;">
         <span class="custom-checkbox checked" id="toggle-ev" style="color: #6AA84F; margin-right: 5px;"></span>
         <label style="margin: 0; color: black;">EV Station</label>
     </div>
     `;
 
-    div.innerHTML += '<div class="category-spacing" style="text-transform: uppercase;color: black"><strong>Map modes</strong><br></div>';
+    div.innerHTML += '<div class="category-spacing legend-section-title" style="text-transform: uppercase;color: black"><strong>Map modes</strong><br></div>';
     div.innerHTML += `
-    <div style="display: flex; align-items: center; gap: 2px; font-size: 10px;">
+    <div class="map-mode-row" style="display: flex; align-items: center; gap: 2px; font-size: 10px;">
         <input type="radio" class="btn-check" name="basemap" id="satellite-basemap" autocomplete="off" onclick="switchBasemap('Satellite')" checked>
         <label class="btn btn-outline-success btn-sm" for="satellite-basemap" style="padding: 2px 5px; font-size: 10px;">Satellite</label>
         
@@ -437,13 +438,11 @@ legend.onAdd = function (map) {
         <label class="btn btn-outline-success btn-sm" for="topographic-basemap" style="padding: 2px 5px; font-size: 10px;">Topographic</label>
     </div><br>`;
 
-    div.innerHTML += '<hr style="margin: 5px 0;">';
+    div.innerHTML += '<hr class="legend-separator" style="margin: 5px 0;">';
 
     var poweredBy = document.createElement('div');
-    poweredBy.style.marginTop = '5px';
-    poweredBy.innerHTML = `
-    <p style="margin: 0;font-weight: bold;font-size: 0.8em;">Powered by:</p>
-    <img src="icons/pmc.png" alt="Powered by" style="max-width: 100%; height: auto; margin-top: 3px"/>`;
+    poweredBy.className = 'legend-footer';
+    poweredBy.textContent = 'Powered by PMC';
     div.appendChild(poweredBy);
 
     // Toggle visibility function
