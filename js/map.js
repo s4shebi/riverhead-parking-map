@@ -532,20 +532,20 @@ function switchBasemap(basemap) {
 var legendVisible = true;
 
 // Set initial icon for the button
-document.getElementById('toggleLegendBtn').innerHTML = '<i class="fa-solid fa-toggle-on" style="color: green; "></i> <strong>Legend</strong>';
+document.getElementById('toggleLegendBtn').innerHTML = '<strong>Legend</strong> <i class="fa-solid fa-toggle-on" style="color: green; "></i>';
 
 var toggleLegendBtn = document.getElementById('toggleLegendBtn');
 
 function addLegendToMap() {
     legend.addTo(map);
     legendVisible = true;
-    toggleLegendBtn.innerHTML = '<i class="fa-solid fa-toggle-on" style="color: green;"></i> <strong>Legend</strong>';
+    toggleLegendBtn.innerHTML = '<strong>Legend</strong> <i class="fa-solid fa-toggle-on" style="color: green;"></i>';
 }
 
 function removeLegendFromMap() {
     map.removeControl(legend);
     legendVisible = false;
-    toggleLegendBtn.innerHTML = '<i class="fa-solid fa-toggle-off" style="color: black;"></i> Legend';
+    toggleLegendBtn.innerHTML = '<strong>Legend</strong> <i class="fa-solid fa-toggle-off" style="color: black;"></i>';
 }
 
 toggleLegendBtn.addEventListener('click', function () {
