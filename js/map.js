@@ -436,7 +436,7 @@ legend.onAdd = function (map) {
         
         <input type="radio" class="btn-check" name="basemap" id="topographic-basemap" autocomplete="off" onclick="switchBasemap('Topographic')">
         <label class="btn btn-outline-success btn-sm" for="topographic-basemap" style="padding: 2px 5px; font-size: 10px;">Topographic</label>
-    </div><br>`;
+    </div>`;
 
     div.innerHTML += '<hr class="legend-separator" style="margin: 5px 0;">';
 
